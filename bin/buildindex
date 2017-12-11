@@ -1,0 +1,19 @@
+#!/usr/bin/env node
+
+'use strict';
+
+const bitsIndex = require('../buildindex.js');
+const path = require('path');
+const yargs = require('yargs');
+
+const ARGS = yargs.usage('$0 input.js\nSee README.md for input requirements.')
+    .alias('d', 'debug')
+    .boolean('d')
+    .demand(1)
+    .wrap(80)
+    .argv;
+
+const indexPath = path.join(process.cwd(),
+    path.relative(process.cwd(), ARGS._[0]));
+
+bitsIndex.buildIndexFromFile(indexPath, !!ARGS.debug);

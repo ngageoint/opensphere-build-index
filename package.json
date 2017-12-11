@@ -1,0 +1,57 @@
+{
+  "name": "opensphere-build-index",
+  "version": "1.0.0",
+  "description": "Generates index HTML files for Google Closure projects.",
+  "bin": {
+    "os-index": "./bin/buildindex"
+  },
+  "main": "buildindex.js",
+  "scripts": {
+    "test": "mocha test/**/*.test.js",
+    "lint": "eslint *.js",
+    "package:update": "if git diff --name-only ORIG_HEAD HEAD | grep --quiet package.json; then npm update && npm install; fi",
+    "precommit": "if git diff --name-only HEAD | grep -q '\\.js$'; then npm run lint; fi",
+    "commitmsg": "validate-commit-msg",
+    "postmerge": "npm run package:update",
+    "postrewrite": "npm run package:update"
+  },
+  "keywords": [
+    "opensphere",
+    "build",
+    "index"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ngageoint/opensphere-build-index.git"
+  },
+  "author": "Kevin Schmidt <kschmidt@caci.com>",
+  "maintainers": [
+    "Kevin Schmidt <kschmidt@caci.com>",
+    "William Wall <wwall@caci.com>"
+  ],
+  "license": "Apache-2.0",
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
+    },
+    "validate-commit-msg": {
+      "helpMessage": "\nPlease fix your commit message (consider using 'npm i -g commitizen'). Well-formatted commit messages allow us to automate our changelog and npm releases.\n\nExamples:\n\"fix(copy-view): Fixed an error when resolving paths for view directories\"\n\"feat(gcc): Added support for defines\"\n\nIf you have installed commitizen, try running 'git cz'."
+    }
+  },
+  "dependencies": {
+    "bluebird": "^3.4.6",
+    "opensphere-build-closure-helper": "^1.0.0",
+    "yargs": "^6.3.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "conventional-changelog-cli": "^1.2.0",
+    "conventional-recommended-bump": "^0.3.0",
+    "cz-conventional-changelog": "^1.2.0",
+    "eslint": "^3.8.1",
+    "eslint-config-google": "^0.7.0",
+    "husky": "^0.13.3",
+    "mocha": "^3.1.2",
+    "validate-commit-msg": "^2.8.2"
+  }
+}
