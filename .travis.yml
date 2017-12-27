@@ -1,0 +1,21 @@
+language: node_js
+env:
+  global:
+  - secure: vHF1UmQH26dU5nk7NNMMKJ6BTWZuv9xSrMpIhbV1apAu44OAmkvX6tlVnJVZ3MJCLkfIbNVq0GI87rg45MFbS6vZWFMbgAWDW5RpQQhI89PydTGb8oi/hX/t+tO7pmDK/E42nTUiA2ticvUAP2SJf4d0QUG1U6LXrY+oUbpJzwgB2Loh5g1xAR/HpNjR2CVWrDRX5Ti/3hjztyEDUFvRAKE7WUYFnVNgEOCh4BHUT6XliK9+ee5lTGYPiwT05qOoa/Ve1Hocn73fwnHITri9OFerGxjVaibeW7DDFRzqdHW5bSnXr2BkZAAikHpylZ96bfarS09P1i05tTJWpNkIfwbA0JSUgNuURI2J0lxWU1R+194G2eKs9MOmQbU7JZ/YWT2swm9dTbii7iwjtI+N7f8GcmQhpZgaiwGa6Xa72KetsIG3H83+ymvJKiLblhgR0zNHeDMTdqeqQpNXh5Na0EM8gIk6I7SML2ObQrzvon2AJ1BJwFQN+xKvpeRWOIfXHOMzYAPA6war/eBVB3PXNLQsmUgpbWi9Sq86dqHVtRvmOyLuc+qJAB7PznTZlNEvi/4+n6SWVxAu+Q/cjicqrxRsLF0nuG2OgWm3LHc+hB79Pp6M1Dg1MdbsXp77UzG6njBTwCWUMwgODbQHmADDZua6hdl/QS/d9C5JQk9X/oM=
+  - secure: ANiimTL2zKNDOIybcCG8CaAhDMNA8Ar1/T/GRhFtKqvB6H5wmMrn4PETqn7kX5pei+1bSnkwnf6Tpz7gZgZwt5xYV4+ORcqZfUPYSYhkKlLSFtQW4hw1WJff4XSo2/kLC9sVRu6gID5LT3GxTjhKBhAIdA4eiDbrb779MScl4vfCoYjbAO8tpmdeS25oaB0K5Q2IGiwhmHQJ5lvPSFIkofLpo9/7OH9SF8HNBTJ/lhMdloUBIW4aInqxrmBTSvUVlfk2AMocGpFNI+mgLTozQOBLa624/IXG2rVyxvKOqDUzcq3ZecdOv4HWbXevPzOzKDc/Cu/6D/CVv0+VC3dJjoGQWCor/Zv9hyftqXNYHtb5+EPASCxdoRii/EibBTNW7xG6gvZClGJ3lDXSchGXFT37eRtfWTbRUXoLAS7feuzBfx8FI9CBdUmf9JP3ERibE7MNZwZW5B4eu++3/tYZ6Rw4otUQapqZs5Vy6Wt9csvXzV0g+k02LUdKePdnyI9qcj6MXukF6+vdj7IlwFFRQ97mm/KYLR7OdgOZvHgVhmKMmjG7AgPBLIdLLg2jHvJTQDM+QpXFdU19wrmAZjX57A96IBZwDSJ0RQ0Kar1IhqduiOrk2wxxnnM5a2KmiNbiDS09UYRlzoZuhKvgVUKJqgeUosbgOoodH6e6HjBWIPg=
+cache:
+  directories:
+  - "~/.npm"
+notifications:
+  email: false
+node_js:
+- stable
+os:
+- linux
+script:
+- npm run lint
+after_success:
+- npm run semantic-release
+branches:
+  except:
+  - "/^v\\d+\\.\\d+\\.\\d+$/"
