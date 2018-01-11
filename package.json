@@ -9,7 +9,7 @@
   "scripts": {
     "test": "mocha test/**/*.test.js",
     "lint": "eslint *.js",
-    "package:update": "if git diff --name-only ORIG_HEAD HEAD | grep --quiet package.json; then npm update && npm install; fi",
+    "package:update": "if git diff --name-only ORIG_HEAD HEAD | grep --quiet package.json; then echo 'UPDATE: package.json changed, consider running yarn in your workspace root'; fi",
     "precommit": "if git diff --name-only HEAD | grep -q '\\.js$'; then npm run lint; fi",
     "commitmsg": "validate-commit-msg",
     "postmerge": "npm run package:update",
