@@ -8,6 +8,7 @@ const expect = require('chai').expect;
 const path = require('path');
 
 const mockDir = path.resolve(__dirname, 'mock');
+const modulesDir = path.join(mockDir, 'node_modules', 'test');
 const buildDir = path.join(mockDir, '.build');
 const distDir = path.join(mockDir, 'dist');
 const numResources = 5;
@@ -50,7 +51,7 @@ const resourceFiles = [
 const cleanMockDirectory = function() {
   return rimraf(mockDir)
     .then(function() {
-      return Promise.map([buildDir, distDir], function(dir) {
+      return Promise.map([buildDir, distDir, modulesDir], function(dir) {
         return mkdirp.mkdirpAsync(dir);
       });
     });
@@ -61,8 +62,9 @@ const cleanMockDirectory = function() {
  * @return {Promise} A promise that resolves when the templates are ready.
  */
 const generateTemplates = function() {
-  return Promise.map(['index1-template.html', 'index2-template.html'], function(file) {
-    return fs.writeFileAsync(path.join(mockDir, file), baseTemplate);
+  return Promise.map([path.join(mockDir, 'index1-template.html'),
+      path.join(modulesDir, 'index2-template.html')], function(file) {
+    return fs.writeFileAsync(file, baseTemplate);
   });
 };
 
@@ -116,6 +118,7 @@ const generateIndex = function() {
       },
       {
         id: 'index2',
+        file: path.join(modulesDir, 'index2-template.html'),
       },
     ],
     debugCss: path.join('styles', 'debug.css'),

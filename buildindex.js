@@ -125,9 +125,9 @@ const buildCompiledIndex = function(options, templateOptions) {
   var basePath = options.basePath || process.cwd();
   var appPath = options.appPath || basePath;
   var id = templateOptions.id;
-  var file = id + '.html';
-  var templateFile = id + '-template.html';
-  var templatePath = path.join(basePath, templateFile);
+  var templateFile = templateOptions.file || id + '-template.html';
+  var templatePath = !path.isAbsolute(templateFile) ? path.join(basePath, templateFile) : templateFile;
+  var file = templatePath.replace(/-template.html$/, '.html');
 
   if (templateOptions.skip) {
     return Promise.resolve();
@@ -139,7 +139,7 @@ const buildCompiledIndex = function(options, templateOptions) {
 
   console.log('Creating compiled index from ' + file + '...');
 
-  var template = readFile(path.join(basePath, templateFile));
+  var template = readFile(templatePath);
 
   // replace application version and version path
   var version = options.appVersion || '';
@@ -177,9 +177,9 @@ const buildDebugIndex = function(options, templateOptions) {
   var basePath = options.basePath || process.cwd();
   var appPath = options.appPath || basePath;
   var id = templateOptions.id;
-  var file = id + '.html';
-  var templateFile = id + '-template.html';
-  var templatePath = path.join(basePath, templateFile);
+  var templateFile = templateOptions.file || id + '-template.html';
+  var templatePath = !path.isAbsolute(templateFile) ? path.join(basePath, templateFile) : templateFile;
+  var file = templatePath.replace(/-template.html$/, '.html');
 
   if (templateOptions.skip) {
     return Promise.resolve();
