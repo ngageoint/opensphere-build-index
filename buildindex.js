@@ -68,6 +68,7 @@ const addVendorCss = function(template, inputFile) {
   } catch (e) {
     console.error('ERROR: failed reading vendor styles from ' + inputFile);
     console.error(e);
+    process.exit(1);
   }
 
   if (files && files.length > 0) {
@@ -102,6 +103,7 @@ const addVendorScripts = function(template, inputFile) {
   } catch (e) {
     console.error('ERROR: failed reading vendor scripts from ' + inputFile);
     console.error(e);
+    process.exit(1);
   }
 
   if (files && files.length > 0) {
@@ -284,8 +286,7 @@ const buildIndexFromFile = function(file, debugOnly) {
   } catch (e) {
     console.error('ERROR: failed loading index file ' + file);
     console.error(e);
-
-    index = undefined;
+    process.exit(1);
   }
 
   if (index) {
