@@ -228,8 +228,7 @@ const buildDebugIndex = function(options, templateOptions) {
     var appScripts = files.map(createScriptTag);
 
     // add Closure defines
-    var definesPath = path.relative(basePath,
-      path.join(appPath, '.build', 'gcc-defines-debug.js'));
+    var definesPath = path.relative(basePath, path.join(appPath, '.build', 'gcc-defines-debug.js'));
     appScripts.unshift(createScriptTag(definesPath));
 
     template = template.replace('<!--APP_JS-->', appScripts.join('\n'));
