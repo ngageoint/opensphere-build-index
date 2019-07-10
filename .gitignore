@@ -1,6 +1,8 @@
 # Build Output #
 ################
 .build/
+.nyc_output/
+test/coverage/
 test/mock
 
 # Dependencies #
