@@ -89,12 +89,11 @@ const addVendorCss = function(template, inputFile) {
 };
 
 /**
- * Add vendor CSS to the template.
- * @param {string} template The template
- * @param {string} inputFile The files to add as scripts
- * @return {string} The modified template
+ * Get the list of vendor scripts.
+ * @param {string} inputFile The input file containing the list of scripts
+ * @return {Array<string>} The vendor scripts.
  */
-const addVendorScripts = function(template, inputFile) {
+const getVendorScripts = function(inputFile) {
   var files;
 
   try {
@@ -106,6 +105,17 @@ const addVendorScripts = function(template, inputFile) {
     process.exit(1);
   }
 
+  return files;
+};
+
+/**
+ * Add vendor JS to the template.
+ * @param {string} template The template
+ * @param {string} inputFile The input file containing the list of scripts
+ * @return {string} The modified template
+ */
+const addVendorScripts = function(template, inputFile) {
+  var files = getVendorScripts(inputFile);
   if (files && files.length > 0) {
     console.log('Adding ' + files.length + ' vendor scripts from ' + inputFile);
 
@@ -202,18 +212,14 @@ const buildDebugIndex = function(options, templateOptions) {
   template = template.replace(/@appVersion@/g, 'dev');
   template = template.replace(/@packageVersion@/g, 'dev');
 
-  // add vendor scripts/css
-  var vendorCssPath = path.join(appPath, '.build',
-      'resources-css-debug-' + id);
-  var vendorJsPath = path.join(appPath, '.build',
-      'resources-js-debug-' + id);
+  // add vendor css
+  var vendorCssPath = path.join(appPath, '.build', 'resources-css-debug-' + id);
   template = addVendorCss(template, vendorCssPath);
-  template = addVendorScripts(template, vendorJsPath);
 
-  // add application styles
+  // add application css
   template = addAppCss(options.debugCss, template);
 
-  // add application scripts
+  // generate list of application scripts
   var manifestPath = path.join(appPath, '.build', 'gcc-manifest');
   var manifestPromise;
   if (!fs.existsSync(manifestPath)) {
@@ -225,13 +231,41 @@ const buildDebugIndex = function(options, templateOptions) {
   }
 
   return manifestPromise.then(function(files) {
-    var appScripts = files.map(createScriptTag);
+    var scripts = [];
 
-    // add Closure defines
-    var definesPath = path.relative(basePath, path.join(appPath, '.build', 'gcc-defines-debug.js'));
-    appScripts.unshift(createScriptTag(definesPath));
+    // copy the debug loader to .build
+    var loaderPath = path.join(appPath, '.build', 'debug-loader.js');
+    fs.copyFileSync(path.join(__dirname, 'debug-loader.js'), loaderPath);
 
-    template = template.replace('<!--APP_JS-->', appScripts.join('\n'));
+    // the script sets a global property to identify where the loader should request the scripts file
+    var debugScriptsPath = path.join(appPath, '.build', id + '-debug-scripts.json');
+    var relativeScriptsPath = path.relative(basePath, debugScriptsPath);
+    var loaderScript = '<script>window.DEBUG_SCRIPTS_PATH="' + relativeScriptsPath + '";</script>\n' +
+        createScriptTag(path.relative(basePath, loaderPath));
+
+    if (template.indexOf('<!--VENDOR_JS-->')) {
+      // add vendor scripts
+      var vendorJsPath = path.join(appPath, '.build', 'resources-js-debug-' + id);
+      var vendorScripts = getVendorScripts(vendorJsPath);
+      scripts = scripts.concat(vendorScripts);
+
+      // add the loader to the template and clear the script so it isn't added twice
+      template = template.replace('<!--VENDOR_JS-->', loaderScript);
+      loaderScript = '';
+    }
+
+    if (template.indexOf('<!--APP_JS-->')) {
+      // add GCC defines and application scripts
+      scripts.push(path.relative(basePath, path.join(appPath, '.build', 'gcc-defines-debug.js')));
+      scripts = scripts.concat(files);
+
+      // add the loader to the template (clears the tag if the loader was already added)
+      template = template.replace('<!--APP_JS-->', loaderScript);
+    }
+
+    // write the debug script JSON to .build
+    console.log('Writing debug scripts to ' + debugScriptsPath);
+    fs.writeFileSync(debugScriptsPath, JSON.stringify(scripts));
 
     var indexPath = path.join(basePath, id + '.html');
     console.log('Writing debug index to ' + indexPath);
