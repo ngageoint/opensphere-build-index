@@ -8,7 +8,7 @@
   "main": "buildindex.js",
   "scripts": {
     "test": "nyc mocha test/**/*.test.js",
-    "lint": "eslint *.js",
+    "lint": "eslint {,**/}*.js",
     "package:update": "if git diff --name-only ORIG_HEAD HEAD | grep --quiet package.json; then echo 'UPDATE: package.json changed, consider running yarn in your workspace root'; fi",
     "semantic-release": "semantic-release"
   },
