@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/ngageoint/opensphere-build-index/compare/v2.0.0...v2.1.0) (2019-07-18)
+
+
+### Features
+
+* **debug:** Use a script loader in the debug index. ([41c45af](https://github.com/ngageoint/opensphere-build-index/commit/41c45af))
+
 # [2.0.0](https://github.com/ngageoint/opensphere-build-index/compare/v1.1.0...v2.0.0) (2018-06-26)
 
 
