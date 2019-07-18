@@ -51,15 +51,15 @@ describe('debug loader', function() {
         appendChild: function(script) {
           children.push(script);
           script.onload();
-        },
+        }
       },
       createElement: function(type) {
         return {};
-      },
+      }
     };
 
     global.window = {
-      DEBUG_SCRIPTS_PATH: jsonPath,
+      DEBUG_SCRIPTS_PATH: jsonPath
     };
     global.XMLHttpRequest = MockXMLHttpRequest;
 

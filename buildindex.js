@@ -163,9 +163,9 @@ const buildCompiledIndex = function(options, templateOptions) {
 
   // add vendor scripts/css
   var vendorCssPath = path.join(appPath, '.build',
-      'resources-css-dist-' + id);
+    'resources-css-dist-' + id);
   var vendorJsPath = path.join(appPath, '.build',
-      'resources-js-dist-' + id);
+    'resources-js-dist-' + id);
   template = addVendorCss(template, vendorCssPath);
   template = addVendorScripts(template, vendorJsPath);
 
@@ -296,7 +296,7 @@ const buildIndex = function(options, debugOnly) {
 
       return promise;
     }, {
-      concurrency: 1,
+      concurrency: 1
     });
   }
 
@@ -331,5 +331,5 @@ const buildIndexFromFile = function(file, debugOnly) {
 
 module.exports = {
   buildIndex: buildIndex,
-  buildIndexFromFile: buildIndexFromFile,
+  buildIndexFromFile: buildIndexFromFile
 };
