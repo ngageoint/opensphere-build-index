@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/ngageoint/opensphere-build-index/compare/v2.1.0...v2.2.0) (2019-08-02)
+
+
+### Features
+
+* **karma:** Add script loader for Karma unit testing. ([dc0e686](https://github.com/ngageoint/opensphere-build-index/commit/dc0e686))
+
 # [2.1.0](https://github.com/ngageoint/opensphere-build-index/compare/v2.0.0...v2.1.0) (2019-07-18)
 
 
