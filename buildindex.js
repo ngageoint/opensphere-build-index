@@ -243,7 +243,7 @@ const buildDebugIndex = function(options, templateOptions) {
     var loaderScript = '<script>window.DEBUG_SCRIPTS_PATH="' + relativeScriptsPath + '";</script>\n' +
         createScriptTag(path.relative(basePath, loaderPath));
 
-    if (template.indexOf('<!--VENDOR_JS-->')) {
+    if (template.indexOf('<!--VENDOR_JS-->') > -1) {
       // add vendor scripts
       var vendorJsPath = path.join(appPath, '.build', 'resources-js-debug-' + id);
       var vendorScripts = getVendorScripts(vendorJsPath);
@@ -254,7 +254,7 @@ const buildDebugIndex = function(options, templateOptions) {
       loaderScript = '';
     }
 
-    if (template.indexOf('<!--APP_JS-->')) {
+    if (template.indexOf('<!--APP_JS-->') > -1) {
       // add GCC defines and application scripts
       scripts.push(path.relative(basePath, path.join(appPath, '.build', 'gcc-defines-debug.js')));
       scripts = scripts.concat(files);
