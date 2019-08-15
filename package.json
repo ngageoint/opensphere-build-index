@@ -35,6 +35,9 @@
     "include": [
       "*.js"
     ],
+    "exclude": [
+      ".eslintrc.js"
+    ],
     "reporter": [
       "lcov",
       "text-summary"
