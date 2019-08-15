@@ -1,3 +1,10 @@
+## [2.2.2](https://github.com/ngageoint/opensphere-build-index/compare/v2.2.1...v2.2.2) (2019-08-15)
+
+
+### Bug Fixes
+
+* **debug:** fix detection of JS tags in debug template ([2f086ba](https://github.com/ngageoint/opensphere-build-index/commit/2f086ba))
+
 ## [2.2.1](https://github.com/ngageoint/opensphere-build-index/compare/v2.2.0...v2.2.1) (2019-08-15)
 
 
