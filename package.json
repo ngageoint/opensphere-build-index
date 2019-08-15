@@ -1,6 +1,6 @@
 {
   "name": "opensphere-build-index",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Generates index HTML files for Google Closure projects.",
   "bin": {
     "os-index": "./bin/buildindex"
@@ -88,6 +88,7 @@
     "mocha": "^6.1.4",
     "nyc": "^14.1.1",
     "semantic-release": "^15.13.3",
+    "slash": "^3.0.0",
     "@commitlint/cli": "^8.0.0",
     "@commitlint/config-conventional": "^8.1.0",
     "@commitlint/travis-cli": "^8.1.0"

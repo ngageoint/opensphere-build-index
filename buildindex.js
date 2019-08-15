@@ -5,6 +5,7 @@ const fs = require('fs');
 const mkdirp = require('mkdirp');
 const path = require('path');
 const closureHelper = require('opensphere-build-closure-helper');
+const slash = require('slash');
 
 /**
  * Convert a path to an HTML `<script>` tag.
@@ -12,7 +13,7 @@ const closureHelper = require('opensphere-build-closure-helper');
  * @return {string} The script tag, or an empty string if the path was empty
  */
 const createScriptTag = function(filePath) {
-  return filePath ? ('<script src="' + filePath + '"></script>') : '';
+  return filePath ? ('<script src="' + slash(filePath) + '"></script>') : '';
 };
 
 /**
@@ -21,7 +22,7 @@ const createScriptTag = function(filePath) {
  * @return {string} The link tag, or an empty string if the path was empty
  */
 const createLinkTag = function(filePath) {
-  return filePath ? ('<link rel="stylesheet" href="' + filePath + '">') : '';
+  return filePath ? ('<link rel="stylesheet" href="' + slash(filePath) + '">') : '';
 };
 
 /**
@@ -159,7 +160,7 @@ const buildCompiledIndex = function(options, templateOptions) {
   var versionPath = version ? (version + path.sep) : '';
   template = template.replace(/@appVersion@/g, version);
   template = template.replace(/@packageVersion@/g, packageVersion);
-  template = template.replace(/@version@/g, versionPath);
+  template = template.replace(/@version@/g, slash(versionPath));
 
   // add vendor scripts/css
   var vendorCssPath = path.join(appPath, '.build',
@@ -239,7 +240,7 @@ const buildDebugIndex = function(options, templateOptions) {
 
     // the script sets a global property to identify where the loader should request the scripts file
     var debugScriptsPath = path.join(appPath, '.build', id + '-debug-scripts.json');
-    var relativeScriptsPath = path.relative(basePath, debugScriptsPath);
+    var relativeScriptsPath = slash(path.relative(basePath, debugScriptsPath));
     var loaderScript = '<script>window.DEBUG_SCRIPTS_PATH="' + relativeScriptsPath + '";</script>\n' +
         createScriptTag(path.relative(basePath, loaderPath));
 

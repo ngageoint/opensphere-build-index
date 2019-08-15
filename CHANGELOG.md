@@ -1,3 +1,10 @@
+## [2.2.1](https://github.com/ngageoint/opensphere-build-index/compare/v2.2.0...v2.2.1) (2019-08-15)
+
+
+### Bug Fixes
+
+* handle win32 paths ([974af8f](https://github.com/ngageoint/opensphere-build-index/commit/974af8f))
+
 # [2.2.0](https://github.com/ngageoint/opensphere-build-index/compare/v2.1.0...v2.2.0) (2019-08-02)
 
 
