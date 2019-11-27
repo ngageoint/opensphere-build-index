@@ -1,3 +1,23 @@
+# [3.0.0](https://github.com/ngageoint/opensphere-build-index/compare/v2.2.2...v3.0.0) (2019-11-27)
+
+
+### Bug Fixes
+
+* **loader:** throw an error if the debug loader promise is rejected ([6304edd](https://github.com/ngageoint/opensphere-build-index/commit/6304edd3d62d83c6604786cfe1c1514722425a38))
+
+
+### Features
+
+* **debug:** replace debug loader with Closure's ([e52e856](https://github.com/ngageoint/opensphere-build-index/commit/e52e856bd5c1e2923869f23da718c56f5504402d))
+
+
+### BREAKING CHANGES
+
+* **debug:** The debug loader has been removed in favor of generating
+Closure dependencies and using goog.bootstrap. While this requires no changes
+to existing index templates, it is a significant change to how applications
+load in debug mode so a major version update seems warranted.
+
 ## [2.2.2](https://github.com/ngageoint/opensphere-build-index/compare/v2.2.1...v2.2.2) (2019-08-15)
 
 
