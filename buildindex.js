@@ -257,6 +257,8 @@ const buildDebugIndex = function(options, templateOptions) {
     fs.writeFileSync(indexPath, template);
 
     return Promise.resolve();
+  }, function(reason) {
+    throw new Error(`Failed writing debug loader: ${reason}`);
   });
 };
 
