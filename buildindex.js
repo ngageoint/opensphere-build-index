@@ -220,53 +220,35 @@ const buildDebugIndex = function(options, templateOptions) {
   // add application css
   template = addAppCss(options.debugCss, template);
 
-  // generate list of application scripts
-  var manifestPath = path.join(appPath, '.build', 'gcc-manifest');
-  var manifestPromise;
-  if (!fs.existsSync(manifestPath)) {
-    var gccArgs = require(path.join(appPath, '.build', 'gcc-args'));
-    manifestPromise = closureHelper.createManifest(gccArgs, basePath);
-  } else {
-    var files = closureHelper.readManifest(manifestPath, basePath);
-    manifestPromise = Promise.resolve(files);
-  }
+  // generate Closure dependency file
+  var appLoaderPath = path.join(appPath, '.build', 'app-loader.js');
+  var gccArgs = require(path.join(appPath, '.build', 'gcc-args'));
 
-  return manifestPromise.then(function(files) {
-    var scripts = [];
-
-    // copy the debug loader to .build
-    var loaderPath = path.join(appPath, '.build', 'debug-loader.js');
-    fs.copyFileSync(path.join(__dirname, 'debug-loader.js'), loaderPath);
-
-    // the script sets a global property to identify where the loader should request the scripts file
-    var debugScriptsPath = path.join(appPath, '.build', id + '-debug-scripts.json');
-    var relativeScriptsPath = slash(path.relative(basePath, debugScriptsPath));
-    var loaderScript = '<script>window.DEBUG_SCRIPTS_PATH="' + relativeScriptsPath + '";</script>\n' +
-        createScriptTag(path.relative(basePath, loaderPath));
-
+  return closureHelper.writeDebugLoader(gccArgs, appLoaderPath).then(function() {
     if (template.indexOf('<!--VENDOR_JS-->') > -1) {
       // add vendor scripts
       var vendorJsPath = path.join(appPath, '.build', 'resources-js-debug-' + id);
-      var vendorScripts = getVendorScripts(vendorJsPath);
-      scripts = scripts.concat(vendorScripts);
+      var vendorScripts = getVendorScripts(vendorJsPath).map(createScriptTag);
 
       // add the loader to the template and clear the script so it isn't added twice
-      template = template.replace('<!--VENDOR_JS-->', loaderScript);
-      loaderScript = '';
+      template = template.replace('<!--VENDOR_JS-->', vendorScripts.join('\n'));
     }
 
     if (template.indexOf('<!--APP_JS-->') > -1) {
-      // add GCC defines and application scripts
-      scripts.push(path.relative(basePath, path.join(appPath, '.build', 'gcc-defines-debug.js')));
-      scripts = scripts.concat(files);
+      var closureLibPath = path.dirname(require.resolve(path.join('google-closure-library', 'package.json')));
+      var closureSrcPath = path.join(closureLibPath, 'closure', 'goog');
+
+      // add GCC debug defines, Closure base/deps, and application loader
+      var appScripts = [
+        path.relative(basePath, path.join(appPath, '.build', 'gcc-defines-debug.js')),
+        path.relative(basePath, path.join(closureSrcPath, 'base.js')),
+        path.relative(basePath, path.join(closureSrcPath, 'deps.js')),
+        path.relative(basePath, appLoaderPath)
+      ].map(createScriptTag);
 
       // add the loader to the template (clears the tag if the loader was already added)
-      template = template.replace('<!--APP_JS-->', loaderScript);
+      template = template.replace('<!--APP_JS-->', appScripts.join('\n'));
     }
-
-    // write the debug script JSON to .build
-    console.log('Writing debug scripts to ' + debugScriptsPath);
-    fs.writeFileSync(debugScriptsPath, JSON.stringify(scripts));
 
     var indexPath = path.join(basePath, id + '.html');
     console.log('Writing debug index to ' + indexPath);
@@ -275,6 +257,8 @@ const buildDebugIndex = function(options, templateOptions) {
     fs.writeFileSync(indexPath, template);
 
     return Promise.resolve();
+  }, function(reason) {
+    throw new Error(`Failed writing debug loader: ${reason}`);
   });
 };
 
