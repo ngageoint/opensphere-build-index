@@ -3,10 +3,10 @@
 Generates index HTML files for Google Closure projects.
 
 ## Usage
-Install it as a dependency of your package: `npm install bits-index --save-dev`
+Install it as a dependency of your package: `npm install opensphere-build-index --save-dev`
 
 Create an `index.js` file in the project root as described below, then invoke by
-calling `bits-index` from node.
+calling `os-index` from node.
 
 ## Index.js Configuration
 
@@ -77,8 +77,7 @@ The following comment tags will be replaced with content from the index:
 * `VENDOR_CSS`: `<link>` elements generated from `resources.css` files.
 * `VENDOR_JS`: `<script>` elements generated from `resources.scripts` files.
 * `APP_CSS`: The `compiledCss`/`debugCss` file.
-* `APP_JS`: The `compiledJs` script, or scripts generated from the
-  `gcc-manifest` output by `bits-resolver` for the debug build.
+* `APP_JS`: The `compiledJs` script, or scripts to set up and run the debug loader.
 
 In addition, the following will be replaced:
 * `@appVersion@`: The `appVersion` string in the index.
