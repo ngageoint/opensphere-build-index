@@ -15,17 +15,17 @@
  * @see https://codereview.chromium.org/18541
  */
 (function() {
-  var MOCK_REGEXP = /\.mock\.js$/;
-  var TEST_REGEXP = /\.test\.js$/;
+  const MOCK_REGEXP = /\.mock\.js$/;
+  const TEST_REGEXP = /\.test\.js$/;
 
   // The Karma configuration must add a proxy to point this at `gcc-test-manifest`.
-  var scriptsPath = '/karma-test-scripts';
+  const scriptsPath = '/karma-test-scripts';
 
   // The resource limit error has been observed when loading ~2000 scripts, so reduce concurrency to avoid that. If the
   // limit is still reached, reduce this further.
-  var concurrencyLimit = 500;
-  var pending = 0;
-  var scripts;
+  const concurrencyLimit = 500;
+  let pending = 0;
+  let scripts;
 
   /**
    * Clear the loaded handler installed by Jasmine, so Karma can be manually started when the loader is done.
@@ -35,14 +35,14 @@
   /**
    * Load the next script in the list.
    */
-  var loadNext = function() {
-    var next = scripts.shift();
+  const loadNext = function() {
+    const next = scripts.shift();
     if (next) {
       //
       // Setting async to false ensures scripts are loaded in the order they are added to the page. When a script
       // finishes loading, move on to the next script in the list.
       //
-      var script = document.createElement('script');
+      const script = document.createElement('script');
       script.async = false;
       script.src = next;
 
@@ -65,7 +65,7 @@
     }
   };
 
-  var xhr = new XMLHttpRequest();
+  const xhr = new XMLHttpRequest();
 
   /**
    * Handle XHR load of test scripts.
@@ -80,12 +80,12 @@
       throw new Error('Failing loading test scripts: empty/unexpected response for ' + scriptsPath);
     }
 
-    var deps = [];
-    var mocks = [];
-    var tests = [];
+    const deps = [];
+    const mocks = [];
+    const tests = [];
 
     // Load source files, then mocks, then tests.
-    var files = xhr.response.split('\n');
+    const files = xhr.response.split('\n');
     files.forEach(function(file) {
       file = file.trim();
 
@@ -103,8 +103,8 @@
     pending = scripts.length;
 
     // Queue scripts, up to the concurrency limit.
-    var n = scripts.length;
-    for (var i = 0; i < n && i < concurrencyLimit; i++) {
+    const n = scripts.length;
+    for (let i = 0; i < n && i < concurrencyLimit; i++) {
       loadNext();
     }
   };
