@@ -1,3 +1,10 @@
+## [3.0.1](https://github.com/ngageoint/opensphere-build-index/compare/v3.0.0...v3.0.1) (2019-12-09)
+
+
+### Bug Fixes
+
+* **debug:** create the debug loader once ([8fd5f5f](https://github.com/ngageoint/opensphere-build-index/commit/8fd5f5f1ff57d7a0b02841c213e3f1f5135098a1))
+
 # [3.0.0](https://github.com/ngageoint/opensphere-build-index/compare/v2.2.2...v3.0.0) (2019-11-27)
 
 
