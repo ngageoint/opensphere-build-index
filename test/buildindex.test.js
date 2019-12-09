@@ -133,7 +133,7 @@ const generateResourceFiles = function() {
 
     const resourcePath = fileParts.join(path.sep);
     const resources = [];
-    for (var i = 0; i < numResources; i++) {
+    for (let i = 0; i < numResources; i++) {
       resources.push(path.join(resourcePath, i + ext));
     }
 
@@ -206,7 +206,7 @@ before(function() {
 
 describe('opensphere-build-index', function() {
   describe('debug index', function() {
-    var indexFiles = {};
+    const indexFiles = {};
 
     it('generates debug index files from the templates', function() {
       expect(fs.existsSync(path.join(mockDir, 'index1.html')))
@@ -217,7 +217,7 @@ describe('opensphere-build-index', function() {
 
     it('reads the debug index', function() {
       return Promise.map(['index1.html', 'index2.html', 'noapp.html', 'novendor.html'], function(fileName) {
-        var key = fileName.replace(/\..*/, '');
+        const key = fileName.replace(/\..*/, '');
         return fs.readFileAsync(path.join(mockDir, fileName), 'utf8').then(function(file) {
           indexFiles[key] = file;
 
@@ -230,10 +230,10 @@ describe('opensphere-build-index', function() {
     });
 
     it('replaces the version strings', function() {
-      for (var key in indexFiles) {
-        var index = indexFiles[key];
-        var lines = index.split('\n');
-        var versionLine = lines.find(function(line) {
+      for (const key in indexFiles) {
+        const index = indexFiles[key];
+        const lines = index.split('\n');
+        const versionLine = lines.find(function(line) {
           return /ng-init="version='dev';versionPath=''"/.test(line);
         });
 
@@ -242,20 +242,20 @@ describe('opensphere-build-index', function() {
     });
 
     it('adds link tags to the index', function() {
-      for (var key in indexFiles) {
-        var index = indexFiles[key];
+      for (const key in indexFiles) {
+        const index = indexFiles[key];
 
-        var lines = index.split('\n');
-        var links = lines.filter(function(line) {
+        const lines = index.split('\n');
+        const links = lines.filter(function(line) {
           return /^<link /.test(line);
         });
 
-        var inspectedLinks = 0;
+        let inspectedLinks = 0;
 
         if (hasVendorTag(key)) {
-          for (var i = 0; i < numResources; i++) {
-            var linkUrl = 'resources/css/debug/' + key + '/' + i + '.css';
-            var linkTag = '<link rel="stylesheet" href="' + linkUrl + '">';
+          for (let i = 0; i < numResources; i++) {
+            const linkUrl = 'resources/css/debug/' + key + '/' + i + '.css';
+            const linkTag = '<link rel="stylesheet" href="' + linkUrl + '">';
             expect(links[i]).to.equal(linkTag, key + ' missing css file from gcc resources');
             inspectedLinks++;
           }
@@ -271,18 +271,18 @@ describe('opensphere-build-index', function() {
     });
 
     it('adds script tags to the index', function() {
-      for (var key in indexFiles) {
-        var index = indexFiles[key];
-        var lines = index.split('\n');
-        var scripts = lines.filter(function(line) {
+      for (const key in indexFiles) {
+        const index = indexFiles[key];
+        const lines = index.split('\n');
+        const scripts = lines.filter(function(line) {
           return /^<script src=/.test(line);
         });
 
-        var inspectedScripts = 0;
+        let inspectedScripts = 0;
 
         if (hasVendorTag(key)) {
-          for (var i = 0; i < numResources; i++) {
-            var scriptUrl = 'resources/js/debug/' + key + '/' + i + '.js';
+          for (let i = 0; i < numResources; i++) {
+            const scriptUrl = 'resources/js/debug/' + key + '/' + i + '.js';
             expect(scripts[i]).to.have.string(scriptUrl, key + ' missing/incorrect js file from gcc resources');
             inspectedScripts++;
           }
@@ -311,7 +311,7 @@ describe('opensphere-build-index', function() {
   });
 
   describe('distribution index', function() {
-    var indexFiles = {};
+    const indexFiles = {};
 
     it('generates distribution index files from the templates', function() {
       expect(fs.existsSync(path.join(distDir, 'index1.html')))
@@ -323,7 +323,7 @@ describe('opensphere-build-index', function() {
     it('reads the distribution index', function() {
       return Promise.map(['index1.html', 'index2.html'], function(fileName) {
         return fs.readFileAsync(path.join(distDir, fileName), 'utf8').then(function(file) {
-          var key = fileName.replace(/\.html/, '');
+          const key = fileName.replace(/\.html/, '');
           indexFiles[key] = file;
 
           return Promise.resolve();
@@ -335,10 +335,10 @@ describe('opensphere-build-index', function() {
     });
 
     it('replaces the version strings', function() {
-      for (var key in indexFiles) {
-        var index = indexFiles[key];
-        var lines = index.split('\n');
-        var versionLine = lines.find(function(line) {
+      for (const key in indexFiles) {
+        const index = indexFiles[key];
+        const lines = index.split('\n');
+        const versionLine = lines.find(function(line) {
           return /ng-init="version='test-version';versionPath='test-version\/'"/.test(line);
         });
 
@@ -347,19 +347,19 @@ describe('opensphere-build-index', function() {
     });
 
     it('adds link tags to the index', function() {
-      for (var key in indexFiles) {
-        var index = indexFiles[key];
+      for (const key in indexFiles) {
+        const index = indexFiles[key];
 
-        var lines = index.split('\n');
-        var links = lines.filter(function(line) {
+        const lines = index.split('\n');
+        const links = lines.filter(function(line) {
           return /^<link /.test(line);
         });
 
         expect(links.length).to.equal(numResources + 1, key + ' has incorrect number of link elements');
 
-        for (var i = 0; i < numResources; i++) {
-          var linkUrl = 'resources/css/dist/' + key + '/' + i + '.css';
-          var linkTag = '<link rel="stylesheet" href="' + linkUrl + '">';
+        for (let i = 0; i < numResources; i++) {
+          const linkUrl = 'resources/css/dist/' + key + '/' + i + '.css';
+          const linkTag = '<link rel="stylesheet" href="' + linkUrl + '">';
           expect(links[i]).to.equal(linkTag, key + ' missing css file from gcc resources');
         }
 
@@ -369,19 +369,19 @@ describe('opensphere-build-index', function() {
     });
 
     it('adds script tags to the index', function() {
-      for (var key in indexFiles) {
-        var index = indexFiles[key];
+      for (const key in indexFiles) {
+        const index = indexFiles[key];
 
-        var lines = index.split('\n');
-        var scripts = lines.filter(function(line) {
+        const lines = index.split('\n');
+        const scripts = lines.filter(function(line) {
           return /^<script src=/.test(line);
         });
 
         expect(scripts.length).to.equal(numResources + 1, key + ' has incorrect number of script elements');
 
-        for (var i = 0; i < numResources; i++) {
-          var scriptUrl = 'resources/js/dist/' + key + '/' + i + '.js';
-          var scriptTag = '<script src="' + scriptUrl + '"></script>';
+        for (let i = 0; i < numResources; i++) {
+          const scriptUrl = 'resources/js/dist/' + key + '/' + i + '.js';
+          const scriptTag = '<script src="' + scriptUrl + '"></script>';
           expect(scripts[i]).to.equal(scriptTag, key + ' missing/incorrect js file from gcc resources');
         }
 

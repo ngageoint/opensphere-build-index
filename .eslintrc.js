@@ -13,8 +13,6 @@ module.exports = {
     // This is silly. Negated conditions are highly useful and often much more concise than
     // their complements.
     "no-negated-condition": "off",
-    // allow use of var
-    "no-var": "off",
     "indent": ["error", 2, {
       "MemberExpression": 1
     }]

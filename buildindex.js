@@ -61,10 +61,10 @@ const addAppScript = function(scriptPath, template) {
  * @return {string} The modified template
  */
 const addVendorCss = function(template, inputFile) {
-  var files;
+  let files;
 
   try {
-    var fileContent = fs.readFileSync(inputFile, 'utf8');
+    const fileContent = fs.readFileSync(inputFile, 'utf8');
     files = fileContent.split('\n');
   } catch (e) {
     console.error('ERROR: failed reading vendor styles from ' + inputFile);
@@ -76,7 +76,7 @@ const addVendorCss = function(template, inputFile) {
     console.log('Adding ' + files.length + ' vendor styles from ' + inputFile);
 
     // add the application css
-    var links = files.map(function(file) {
+    const links = files.map(function(file) {
       return createLinkTag(file);
     });
 
@@ -95,10 +95,10 @@ const addVendorCss = function(template, inputFile) {
  * @return {Array<string>} The vendor scripts.
  */
 const getVendorScripts = function(inputFile) {
-  var files;
+  let files;
 
   try {
-    var fileContent = fs.readFileSync(inputFile, 'utf8');
+    const fileContent = fs.readFileSync(inputFile, 'utf8');
     files = fileContent.split('\n');
   } catch (e) {
     console.error('ERROR: failed reading vendor scripts from ' + inputFile);
@@ -116,11 +116,11 @@ const getVendorScripts = function(inputFile) {
  * @return {string} The modified template
  */
 const addVendorScripts = function(template, inputFile) {
-  var files = getVendorScripts(inputFile);
+  const files = getVendorScripts(inputFile);
   if (files && files.length > 0) {
     console.log('Adding ' + files.length + ' vendor scripts from ' + inputFile);
 
-    var scripts = files.map(function(file) {
+    const scripts = files.map(function(file) {
       return createScriptTag(file);
     });
 
@@ -134,13 +134,11 @@ const addVendorScripts = function(template, inputFile) {
   return template;
 };
 
-const buildCompiledIndex = function(options, templateOptions) {
-  var basePath = options.basePath || process.cwd();
-  var appPath = options.appPath || basePath;
-  var id = templateOptions.id;
-  var templateFile = templateOptions.file || id + '-template.html';
-  var templatePath = !path.isAbsolute(templateFile) ? path.join(basePath, templateFile) : templateFile;
-  var file = templatePath.replace(/-template.html$/, '.html');
+const buildCompiledIndex = function(options, templateOptions, basePath, appPath) {
+  const id = templateOptions.id;
+  const templateFile = templateOptions.file || id + '-template.html';
+  const templatePath = !path.isAbsolute(templateFile) ? path.join(basePath, templateFile) : templateFile;
+  const file = templatePath.replace(/-template.html$/, '.html');
 
   if (templateOptions.skip) {
     return Promise.resolve();
@@ -152,20 +150,20 @@ const buildCompiledIndex = function(options, templateOptions) {
 
   console.log('Creating compiled index from ' + file + '...');
 
-  var template = readFile(templatePath);
+  let template = readFile(templatePath);
 
   // replace application version and version path
-  var version = options.appVersion || '';
-  var packageVersion = options.overrideVersion || options.packageVersion || '';
-  var versionPath = version ? (version + path.sep) : '';
+  const version = options.appVersion || '';
+  const packageVersion = options.overrideVersion || options.packageVersion || '';
+  const versionPath = version ? (version + path.sep) : '';
   template = template.replace(/@appVersion@/g, version);
   template = template.replace(/@packageVersion@/g, packageVersion);
   template = template.replace(/@version@/g, slash(versionPath));
 
   // add vendor scripts/css
-  var vendorCssPath = path.join(appPath, '.build',
+  const vendorCssPath = path.join(appPath, '.build',
     'resources-css-dist-' + id);
-  var vendorJsPath = path.join(appPath, '.build',
+  const vendorJsPath = path.join(appPath, '.build',
     'resources-js-dist-' + id);
   template = addVendorCss(template, vendorCssPath);
   template = addVendorScripts(template, vendorJsPath);
@@ -173,7 +171,7 @@ const buildCompiledIndex = function(options, templateOptions) {
   template = addAppCss(options.compiledCss, template);
   template = addAppScript(options.compiledJs, template);
 
-  var indexPath = path.join(options.distPath, id + '.html');
+  const indexPath = path.join(options.distPath, id + '.html');
   console.log('Writing compiled index to ' + indexPath);
   console.log();
 
@@ -186,13 +184,11 @@ const buildCompiledIndex = function(options, templateOptions) {
   return Promise.resolve();
 };
 
-const buildDebugIndex = function(options, templateOptions) {
-  var basePath = options.basePath || process.cwd();
-  var appPath = options.appPath || basePath;
-  var id = templateOptions.id;
-  var templateFile = templateOptions.file || id + '-template.html';
-  var templatePath = !path.isAbsolute(templateFile) ? path.join(basePath, templateFile) : templateFile;
-  var file = templatePath.replace(/-template.html$/, '.html');
+const buildDebugIndex = function(options, templateOptions, basePath, appPath) {
+  const id = templateOptions.id;
+  const templateFile = templateOptions.file || id + '-template.html';
+  const templatePath = !path.isAbsolute(templateFile) ? path.join(basePath, templateFile) : templateFile;
+  const file = templatePath.replace(/-template.html$/, '.html');
 
   if (templateOptions.skip) {
     return Promise.resolve();
@@ -204,7 +200,7 @@ const buildDebugIndex = function(options, templateOptions) {
 
   console.log('Creating debug index from ' + file + '...');
 
-  var template = readFile(templatePath);
+  let template = readFile(templatePath);
 
   // remove version tags
   template = template.replace(/@version@/g, '');
@@ -214,52 +210,66 @@ const buildDebugIndex = function(options, templateOptions) {
   template = template.replace(/@packageVersion@/g, 'dev');
 
   // add vendor css
-  var vendorCssPath = path.join(appPath, '.build', 'resources-css-debug-' + id);
+  const vendorCssPath = path.join(appPath, '.build', 'resources-css-debug-' + id);
   template = addVendorCss(template, vendorCssPath);
 
   // add application css
   template = addAppCss(options.debugCss, template);
 
-  // generate Closure dependency file
-  var appLoaderPath = path.join(appPath, '.build', 'app-loader.js');
-  var gccArgs = require(path.join(appPath, '.build', 'gcc-args'));
+  if (template.indexOf('<!--VENDOR_JS-->') > -1) {
+    // add vendor scripts
+    const vendorJsPath = path.join(appPath, '.build', 'resources-js-debug-' + id);
+    const vendorScripts = getVendorScripts(vendorJsPath).map(createScriptTag);
 
-  return closureHelper.writeDebugLoader(gccArgs, appLoaderPath).then(function() {
-    if (template.indexOf('<!--VENDOR_JS-->') > -1) {
-      // add vendor scripts
-      var vendorJsPath = path.join(appPath, '.build', 'resources-js-debug-' + id);
-      var vendorScripts = getVendorScripts(vendorJsPath).map(createScriptTag);
+    // add the loader to the template and clear the script so it isn't added twice
+    template = template.replace('<!--VENDOR_JS-->', vendorScripts.join('\n'));
+  }
 
-      // add the loader to the template and clear the script so it isn't added twice
-      template = template.replace('<!--VENDOR_JS-->', vendorScripts.join('\n'));
-    }
+  if (template.indexOf('<!--APP_JS-->') > -1) {
+    const closureLibPath = path.dirname(require.resolve(path.join('google-closure-library', 'package.json')));
+    const closureSrcPath = path.join(closureLibPath, 'closure', 'goog');
+    const appLoaderPath = getAppLoaderPath(appPath);
 
-    if (template.indexOf('<!--APP_JS-->') > -1) {
-      var closureLibPath = path.dirname(require.resolve(path.join('google-closure-library', 'package.json')));
-      var closureSrcPath = path.join(closureLibPath, 'closure', 'goog');
+    // add GCC debug defines, Closure base/deps, and application loader
+    const appScripts = [
+      path.relative(basePath, path.join(appPath, '.build', 'gcc-defines-debug.js')),
+      path.relative(basePath, path.join(closureSrcPath, 'base.js')),
+      path.relative(basePath, path.join(closureSrcPath, 'deps.js')),
+      path.relative(basePath, appLoaderPath)
+    ].map(createScriptTag);
 
-      // add GCC debug defines, Closure base/deps, and application loader
-      var appScripts = [
-        path.relative(basePath, path.join(appPath, '.build', 'gcc-defines-debug.js')),
-        path.relative(basePath, path.join(closureSrcPath, 'base.js')),
-        path.relative(basePath, path.join(closureSrcPath, 'deps.js')),
-        path.relative(basePath, appLoaderPath)
-      ].map(createScriptTag);
+    // add the loader to the template (clears the tag if the loader was already added)
+    template = template.replace('<!--APP_JS-->', appScripts.join('\n'));
+  }
 
-      // add the loader to the template (clears the tag if the loader was already added)
-      template = template.replace('<!--APP_JS-->', appScripts.join('\n'));
-    }
+  const indexPath = path.join(basePath, id + '.html');
+  console.log('Writing debug index to ' + indexPath);
+  console.log();
 
-    var indexPath = path.join(basePath, id + '.html');
-    console.log('Writing debug index to ' + indexPath);
-    console.log();
+  fs.writeFileSync(indexPath, template);
 
-    fs.writeFileSync(indexPath, template);
+  return Promise.resolve();
+};
 
-    return Promise.resolve();
-  }, function(reason) {
-    throw new Error(`Failed writing debug loader: ${reason}`);
-  });
+/**
+ * Build the application debug loader.
+ * @param {string} basePath The base path.
+ * @return {Promise} A promise that resolves when the loader.
+ */
+const buildDebugLoader = function(basePath) {
+  const appLoaderPath = getAppLoaderPath(basePath);
+  const gccArgs = require(path.join(basePath, '.build', 'gcc-args'));
+  return closureHelper.writeDebugLoader(gccArgs, appLoaderPath);
+  ;
+};
+
+/**
+ * Get the path for the application debug loader.
+ * @param {string} basePath The base path.
+ * @return {string} The path to the loader.
+ */
+const getAppLoaderPath = function(basePath) {
+  return path.join(basePath, '.build', 'app-loader.js');
 };
 
 /**
@@ -270,18 +280,28 @@ const buildDebugIndex = function(options, templateOptions) {
  */
 const buildIndex = function(options, debugOnly) {
   if (options && options.templates) {
+    const basePath = options.basePath || process.cwd();
+    const appPath = options.appPath || basePath;
+
+    // generate each index from the templates
     return Promise.map(options.templates, function(template) {
-      var promise = buildDebugIndex(options, template);
+      // only write the debug application loader once, when processing "index"
+      const promise = template.id === 'index' && !template.skip ?
+        buildDebugLoader(appPath).then(undefined, function(reason) {
+          throw new Error(`Failed writing debug loader: ${reason}`);
+        }) : Promise.resolve();
+
+      promise.then(function() {
+        buildDebugIndex(options, template, basePath, appPath);
+      });
 
       if (!debugOnly) {
         promise.then(function() {
-          return buildCompiledIndex(options, template);
+          return buildCompiledIndex(options, template, basePath, appPath);
         });
       }
 
       return promise;
-    }, {
-      concurrency: 1
     });
   }
 
@@ -295,7 +315,7 @@ const buildIndex = function(options, debugOnly) {
  * @return {Promise} A promise that resolves when the index is ready.
  */
 const buildIndexFromFile = function(file, debugOnly) {
-  var index;
+  let index;
 
   console.log('Loading index options from ' + file);
 
