@@ -226,7 +226,11 @@ const buildDebugIndex = function(options, templateOptions, basePath, appPath) {
   }
 
   if (template.indexOf('<!--APP_JS-->') > -1) {
-    const closureLibPath = path.dirname(require.resolve(path.join('google-closure-library', 'package.json')));
+    const closureLibPackage = path.join('google-closure-library', 'package.json');
+    const closureLibPath = path.dirname(require.resolve(closureLibPackage, {
+      // try cwd first to get the version required by the application
+      paths: [process.cwd(), __dirname]
+    }));
     const closureSrcPath = path.join(closureLibPath, 'closure', 'goog');
     const appLoaderPath = getAppLoaderPath(appPath);
 
