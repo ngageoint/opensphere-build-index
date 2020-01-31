@@ -1,3 +1,10 @@
+## [3.0.2](https://github.com/ngageoint/opensphere-build-index/compare/v3.0.1...v3.0.2) (2020-01-31)
+
+
+### Bug Fixes
+
+* **goog:** resolve the closure library from the cwd first ([6c5ddb8](https://github.com/ngageoint/opensphere-build-index/commit/6c5ddb895a5e3bebb42a1d05c07c42d75573e7dd))
+
 ## [3.0.1](https://github.com/ngageoint/opensphere-build-index/compare/v3.0.0...v3.0.1) (2019-12-09)
 
 
