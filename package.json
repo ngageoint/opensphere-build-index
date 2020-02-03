@@ -67,7 +67,7 @@
   },
   "dependencies": {
     "bluebird": "^3.4.6",
-    "opensphere-build-closure-helper": "^4.0.0",
+    "opensphere-build-closure-helper": "^5.0.0",
     "yargs": "^6.3.0"
   },
   "devDependencies": {
@@ -83,11 +83,7 @@
     "chai": "^4.2.0",
     "chai-spies": "^1.0.0",
     "eslint": "^6.0.0",
-    "eslint-config-google": "^0.13.0",
-    "eslint-config-opensphere": "^3.0.0",
-    "eslint-plugin-google-camelcase": "^0.0.2",
-    "eslint-plugin-jsdoc": "^8.6.0",
-    "eslint-plugin-opensphere": "^2.0.0",
+    "eslint-config-opensphere": "^3.3.0",
     "husky": "^3.0.1",
     "mocha": "^6.1.4",
     "nyc": "^14.1.1",
