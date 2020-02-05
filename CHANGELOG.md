@@ -1,3 +1,10 @@
+## [3.0.3](https://github.com/ngageoint/opensphere-build-index/compare/v3.0.2...v3.0.3) (2020-02-05)
+
+
+### Bug Fixes
+
+* **gcc:** update closure deps ([6ef8d64](https://github.com/ngageoint/opensphere-build-index/commit/6ef8d640b2e758d36fa5348d447a009b167a756f))
+
 ## [3.0.2](https://github.com/ngageoint/opensphere-build-index/compare/v3.0.1...v3.0.2) (2020-01-31)
 
 
