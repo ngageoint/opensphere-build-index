@@ -12,7 +12,13 @@
   //
   // Closure Compiler manifest containing the ordered list of files to load.
   //
-  const manifestPath = '.build/gcc-manifest';
+  const manifestPath = window.GCC_MANIFEST_PATH;
+  if (!manifestPath) {
+    throw new Error('Path to debug scripts was not provided!');
+  }
+
+  // remove the global before loading scripts
+  delete window.GCC_MANIFEST_PATH;
 
   let nextIndex = 0;
   let pending = 0;

@@ -266,7 +266,7 @@ describe('opensphere-build-index', function() {
         const index = indexFiles[key];
         const lines = index.split('\n');
         const scripts = lines.filter(function(line) {
-          return /^<script src=/.test(line);
+          return /^<script( src|>)/.test(line);
         });
 
         let inspectedScripts = 0;
@@ -282,6 +282,9 @@ describe('opensphere-build-index', function() {
         if (hasAppTag(key)) {
           expect(scripts[inspectedScripts]).to.have.string('.build/gcc-defines-debug.js',
             key + ' missing gcc debug defines');
+          inspectedScripts++;
+
+          expect(scripts[inspectedScripts]).to.have.string('window.GCC_MANIFEST_PATH', key + ' missing manifest path');
           inspectedScripts++;
 
           expect(scripts[inspectedScripts]).to.have.string('.build/app-loader.js', key + ' missing app loader');

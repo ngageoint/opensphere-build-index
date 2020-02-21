@@ -225,11 +225,15 @@ const buildDebugIndex = function(options, templateOptions, basePath, appPath) {
   }
 
   if (template.indexOf('<!--APP_JS-->') > -1) {
+    const debugScriptsPath = path.join(appPath, '.build', 'gcc-manifest');
+    const relativeScriptsPath = slash(path.relative(basePath, debugScriptsPath));
+
     // add GCC debug defines and application loader
     const appScripts = [
-      path.relative(basePath, path.join(appPath, '.build', 'gcc-defines-debug.js')),
-      path.relative(basePath, path.join(appPath, '.build', 'app-loader.js'))
-    ].map(createScriptTag);
+      createScriptTag(path.relative(basePath, path.join(appPath, '.build', 'gcc-defines-debug.js'))),
+      `<script>window.GCC_MANIFEST_PATH="${relativeScriptsPath}";</script>`,
+      createScriptTag(path.relative(basePath, path.join(appPath, '.build', 'app-loader.js')))
+    ];
 
     // add the loader to the template (clears the tag if the loader was already added)
     template = template.replace('<!--APP_JS-->', appScripts.join('\n'));
