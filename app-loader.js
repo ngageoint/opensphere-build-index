@@ -3,14 +3,22 @@
   // limit is still reached, reduce this further.
   const concurrencyLimit = 500;
 
+  //
+  // Match goog.module files. Uses the 'm' flag to support files with preceding comments, while still matching the
+  // statement from the start of a line.
+  //
+  const moduleRegex = /^goog\.module\('.*'\);/m;
+
+  //
+  // Closure Compiler manifest containing the ordered list of files to load.
+  //
+  const manifestPath = '.build/gcc-manifest';
+
   let nextIndex = 0;
   let pending = 0;
 
   let scriptsContent;
   let scriptPaths;
-
-  const moduleRegex = /\ngoog\.module\('[^']+'\);\n/;
-  const manifestPath = '.build/gcc-manifest';
 
   /**
    * Load the next script.
