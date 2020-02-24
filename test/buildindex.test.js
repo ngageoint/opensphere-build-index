@@ -3,14 +3,8 @@ const fs = Promise.promisifyAll(require('fs'));
 const rimraf = Promise.promisify(require('rimraf'));
 const mkdirp = Promise.promisifyAll(require('mkdirp'));
 const path = require('path');
-const closureHelper = require('opensphere-build-closure-helper');
 const osIndex = require('../buildindex.js');
-
-const chai = require('chai');
-const spies = require('chai-spies');
-chai.use(spies);
-
-const expect = chai.expect;
+const {expect} = require('chai');
 
 const mockDir = path.resolve(__dirname, 'mock');
 const modulesDir = path.join(mockDir, 'node_modules', 'test');
@@ -194,9 +188,6 @@ const generateIndex = function() {
 };
 
 before(function() {
-  // we'll mock the results instead of invoking the Closure deps writer
-  chai.spy.on(closureHelper, 'writeDebugLoader', () => Promise.resolve());
-
   return cleanMockDirectory()
     .then(generateTemplates)
     .then(generateResourceFiles)
@@ -275,7 +266,7 @@ describe('opensphere-build-index', function() {
         const index = indexFiles[key];
         const lines = index.split('\n');
         const scripts = lines.filter(function(line) {
-          return /^<script src=/.test(line);
+          return /^<script( src|>)/.test(line);
         });
 
         let inspectedScripts = 0;
@@ -293,12 +284,7 @@ describe('opensphere-build-index', function() {
             key + ' missing gcc debug defines');
           inspectedScripts++;
 
-          expect(scripts[inspectedScripts]).to.have.string('google-closure-library/closure/goog/base.js',
-            key + ' missing gcc base.js');
-          inspectedScripts++;
-
-          expect(scripts[inspectedScripts]).to.have.string('google-closure-library/closure/goog/deps.js',
-            key + ' missing gcc deps.js');
+          expect(scripts[inspectedScripts]).to.have.string('window.GCC_MANIFEST_PATH', key + ' missing manifest path');
           inspectedScripts++;
 
           expect(scripts[inspectedScripts]).to.have.string('.build/app-loader.js', key + ' missing app loader');

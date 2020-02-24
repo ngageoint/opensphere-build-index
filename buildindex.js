@@ -4,7 +4,6 @@ const Promise = require('bluebird');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const path = require('path');
-const closureHelper = require('opensphere-build-closure-helper');
 const slash = require('slash');
 
 /**
@@ -226,21 +225,15 @@ const buildDebugIndex = function(options, templateOptions, basePath, appPath) {
   }
 
   if (template.indexOf('<!--APP_JS-->') > -1) {
-    const closureLibPackage = path.join('google-closure-library', 'package.json');
-    const closureLibPath = path.dirname(require.resolve(closureLibPackage, {
-      // try cwd first to get the version required by the application
-      paths: [process.cwd(), __dirname]
-    }));
-    const closureSrcPath = path.join(closureLibPath, 'closure', 'goog');
-    const appLoaderPath = getAppLoaderPath(appPath);
+    const debugScriptsPath = path.join(appPath, '.build', 'gcc-manifest');
+    const relativeScriptsPath = slash(path.relative(basePath, debugScriptsPath));
 
-    // add GCC debug defines, Closure base/deps, and application loader
+    // add GCC debug defines and application loader
     const appScripts = [
-      path.relative(basePath, path.join(appPath, '.build', 'gcc-defines-debug.js')),
-      path.relative(basePath, path.join(closureSrcPath, 'base.js')),
-      path.relative(basePath, path.join(closureSrcPath, 'deps.js')),
-      path.relative(basePath, appLoaderPath)
-    ].map(createScriptTag);
+      createScriptTag(path.relative(basePath, path.join(appPath, '.build', 'gcc-defines-debug.js'))),
+      `<script>window.GCC_MANIFEST_PATH="${relativeScriptsPath}";</script>`,
+      createScriptTag(path.relative(basePath, path.join(appPath, '.build', 'app-loader.js')))
+    ];
 
     // add the loader to the template (clears the tag if the loader was already added)
     template = template.replace('<!--APP_JS-->', appScripts.join('\n'));
@@ -256,27 +249,6 @@ const buildDebugIndex = function(options, templateOptions, basePath, appPath) {
 };
 
 /**
- * Build the application debug loader.
- * @param {string} basePath The base path.
- * @return {Promise} A promise that resolves when the loader.
- */
-const buildDebugLoader = function(basePath) {
-  const appLoaderPath = getAppLoaderPath(basePath);
-  const gccArgs = require(path.join(basePath, '.build', 'gcc-args'));
-  return closureHelper.writeDebugLoader(gccArgs, appLoaderPath);
-  ;
-};
-
-/**
- * Get the path for the application debug loader.
- * @param {string} basePath The base path.
- * @return {string} The path to the loader.
- */
-const getAppLoaderPath = function(basePath) {
-  return path.join(basePath, '.build', 'app-loader.js');
-};
-
-/**
  * Build index HTML files for a project.
  * @param {Object} options The index generation options.
  * @param {boolean} debugOnly If the compiled index should be skipped.
@@ -287,25 +259,19 @@ const buildIndex = function(options, debugOnly) {
     const basePath = options.basePath || process.cwd();
     const appPath = options.appPath || basePath;
 
+    // copy the debug loader to .build
+    const loaderPath = path.join(appPath, '.build', 'app-loader.js');
+    fs.copyFileSync(path.join(__dirname, 'app-loader.js'), loaderPath);
+
     // generate each index from the templates
     return Promise.map(options.templates, function(template) {
-      // only write the debug application loader once, when processing "index"
-      const promise = template.id === 'index' && !template.skip ?
-        buildDebugLoader(appPath).then(undefined, function(reason) {
-          throw new Error(`Failed writing debug loader: ${reason}`);
-        }) : Promise.resolve();
-
-      promise.then(function() {
-        buildDebugIndex(options, template, basePath, appPath);
-      });
+      buildDebugIndex(options, template, basePath, appPath);
 
       if (!debugOnly) {
-        promise.then(function() {
-          return buildCompiledIndex(options, template, basePath, appPath);
-        });
+        return buildCompiledIndex(options, template, basePath, appPath);
       }
 
-      return promise;
+      return Promise.resolve();
     });
   }
 
