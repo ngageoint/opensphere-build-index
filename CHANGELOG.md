@@ -1,3 +1,16 @@
+# [3.1.0](https://github.com/ngageoint/opensphere-build-index/compare/v3.0.3...v3.1.0) (2020-02-24)
+
+
+### Bug Fixes
+
+* **debug:** provide manifest path to debug loader ([e69119d](https://github.com/ngageoint/opensphere-build-index/commit/e69119de5d66eacdc9d03fdbd97b14ab33bedaa8))
+
+
+### Features
+
+* **debug:** add debug app loader with goog.module support ([b038f37](https://github.com/ngageoint/opensphere-build-index/commit/b038f37e1fb2877bcaa45c0ed478fa4a8efc4fbd))
+* **debug:** improve goog.module regex ([8c0158a](https://github.com/ngageoint/opensphere-build-index/commit/8c0158ae85b3abcf87fd9f2730b1235e9a20d6da))
+
 ## [3.0.3](https://github.com/ngageoint/opensphere-build-index/compare/v3.0.2...v3.0.3) (2020-02-05)
 
 

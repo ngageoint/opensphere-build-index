@@ -1,6 +1,6 @@
 {
   "name": "opensphere-build-index",
-  "version": "3.0.3",
+  "version": "3.1.0",
   "description": "Generates index HTML files for Google Closure projects.",
   "bin": {
     "os-index": "./bin/buildindex"
