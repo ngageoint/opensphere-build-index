@@ -24,14 +24,14 @@
   let pending = 0;
 
   let scriptsContent;
-  let scriptPaths;
+  let scripts;
 
   /**
    * Load the next script.
    */
   const loadNext = function() {
     const scriptIndex = nextIndex++;
-    const next = scriptPaths[scriptIndex];
+    const next = scripts[scriptIndex];
     if (next) {
       const xhr = new XMLHttpRequest();
       xhr.open('GET', next);
@@ -61,7 +61,7 @@
 
             // Dump everything for good measure.
             scriptsContent.length = 0;
-            scriptPaths.length = 0;
+            scripts.length = 0;
           }
         } else {
           throw new Error(`Failed loading script: empty/unexpected response for ${next}`);
@@ -109,20 +109,18 @@
    * @param {ProgressEvent} e The event.
    */
   xhr.onload = (e) => {
-    if (!xhr.response || typeof xhr.response !== 'string') {
+    if (!Array.isArray(xhr.response) || !xhr.response.length) {
       throw new Error(`Failed loading test script manifest: empty/unexpected response for  ${manifestPath}`);
     }
 
-    scriptPaths = xhr.response.trim().split('\n').map((path) => {
-      return path.replace(/^.*\/workspace\//, '../').replace(/^.*\/node_modules\//, '../../node_modules/');
-    });
+    scripts = xhr.response;
 
     // Cache content for all scripts until everything has been loaded. This allows async XHR, but sync script loading.
-    scriptsContent = new Array(scriptPaths.length);
-    pending = scriptPaths.length;
+    scriptsContent = new Array(scripts.length);
+    pending = scripts.length;
 
     // Queue scripts, up to the concurrency limit.
-    const n = scriptPaths.length;
+    const n = scripts.length;
     for (let i = 0; i < n && i < concurrencyLimit; i++) {
       loadNext();
     }
@@ -135,6 +133,6 @@
     throw new Error(`Failed loading test script manifest: XHR failed with code ${xhr.status}`);
   };
   xhr.open('GET', manifestPath);
-  xhr.responseType = 'text';
+  xhr.responseType = 'json';
   xhr.send();
 })();
