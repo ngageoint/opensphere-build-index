@@ -1,3 +1,10 @@
+## [3.1.1](https://github.com/ngageoint/opensphere-build-index/compare/v3.1.0...v3.1.1) (2020-02-25)
+
+
+### Bug Fixes
+
+* **debug:** generate manifest in debug-only builds (no gcc-manifest) ([35c4434](https://github.com/ngageoint/opensphere-build-index/commit/35c44341b0fcff267485563a00f8e2a34df547b1))
+
 # [3.1.0](https://github.com/ngageoint/opensphere-build-index/compare/v3.0.3...v3.1.0) (2020-02-24)
 
 
