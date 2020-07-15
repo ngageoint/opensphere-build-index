@@ -283,11 +283,18 @@ const writeDebugManifest = function(id, basePath, appPath) {
   }
 
   return manifestPromise.then(function(files) {
-    const debugScriptsPath = getDebugManifestPath(id, appPath);
+    if (files) {
+      // add the Closure module loader mixin
+      const mixinPath = path.join(appPath, '.build', 'closure-mixin.js');
+      const relativeMixinPath = slash(path.relative(basePath, mixinPath));
+      files.splice(1, 0, relativeMixinPath);
 
-    // write the debug manifest to .build
-    console.log(`Writing debug manifest to ${debugScriptsPath}`);
-    fs.writeFileSync(debugScriptsPath, JSON.stringify(files));
+      const debugScriptsPath = getDebugManifestPath(id, appPath);
+
+      // write the debug manifest to .build
+      console.log(`Writing debug manifest to ${debugScriptsPath}`);
+      fs.writeFileSync(debugScriptsPath, JSON.stringify(files));
+    }
   });
 };
 
@@ -305,6 +312,10 @@ const buildIndex = function(options, debugOnly) {
     // copy the debug loader to .build
     const loaderPath = path.join(appPath, '.build', 'app-loader.js');
     fs.copyFileSync(path.join(__dirname, 'app-loader.js'), loaderPath);
+
+    // copy the closure module loader mixin to .build
+    const mixinPath = path.join(appPath, '.build', 'closure-mixin.js');
+    fs.copyFileSync(path.join(__dirname, 'closure-mixin.js'), mixinPath);
 
     // generate each index from the templates
     return Promise.map(options.templates, function(template) {
