@@ -1,3 +1,10 @@
+# [3.2.0](https://github.com/ngageoint/opensphere-build-index/compare/v3.1.1...v3.2.0) (2020-07-15)
+
+
+### Features
+
+* **goog:** add closure mixin to fix debug load of legacy modules ([020913d](https://github.com/ngageoint/opensphere-build-index/commit/020913dbebcbb20ca631da15cd2b980069bae9d4))
+
 ## [3.1.1](https://github.com/ngageoint/opensphere-build-index/compare/v3.1.0...v3.1.1) (2020-02-25)
 
 
