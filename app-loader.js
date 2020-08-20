@@ -7,7 +7,18 @@
   // Match goog.module files. Uses the 'm' flag to support files with preceding comments, while still matching the
   // statement from the start of a line.
   //
-  const moduleRegex = /^goog\.module\('.*'\);/m;
+  const googModuleRegex = /^goog\.module\('.*'\);/m;
+
+  //
+  // Match ES6 module files. Uses the 'm' flag to support files with preceding comments, while still matching the
+  // statement from the start of a line.
+  //
+  const es6ModuleRegex = /^export /m;
+
+  //
+  // Match the module id declared by goog.declareModuleId.
+  //
+  const declareModuleIdRegex = /^goog\.declareModuleId\('([^']+)'\);$/m;
 
   //
   // Closure Compiler manifest containing the ordered list of files to load.
@@ -45,7 +56,50 @@
 
         if (xhr.responseText) {
           let content;
-          if (moduleRegex.test(`\n${xhr.responseText}`)) {
+          if (es6ModuleRegex.test(xhr.responseText)) {
+            const moduleId = xhr.responseText.match(declareModuleIdRegex);
+            content = () => {
+              let oldModuleState;
+
+              // Callback to fire before the module is loaded.
+              const beforeKey = goog.Dependency.registerCallback_(function() {
+                goog.Dependency.unregisterCallback_(beforeKey);
+
+                // Let Closure know we're loading an ES6 module.
+                oldModuleState = goog.moduleLoaderState_;
+                goog.moduleLoaderState_ = {
+                  type: goog.ModuleType.ES6
+                };
+              });
+              addModuleToDocument(`goog.Dependency.callback_('${beforeKey}')`);
+
+              // Load the original module.
+              addModuleToDocument(undefined, next);
+
+              // Callback to fire after the module is loaded.
+              const afterKey = goog.Dependency.registerCallback_(function() {
+                goog.Dependency.unregisterCallback_(afterKey);
+
+                // Restore the previous module state and load the next script.
+                goog.moduleLoaderState_ = oldModuleState;
+                addNextScriptToPage();
+              });
+
+              // Import the module and add its exports to Closure.
+              addModuleToDocument(`
+                import * as m from '${next}';
+                const moduleName = '${moduleId ? moduleId[1] : undefined}';
+                if (moduleName) {
+                  goog.loadedModules_[moduleName] = {
+                    exports: m,
+                    type: goog.ModuleType.ES6,
+                    moduleId: moduleName || ''
+                  };
+                }
+                goog.Dependency.callback_('${afterKey}')
+              `.trim());
+            };
+          } else if (googModuleRegex.test(`\n${xhr.responseText}`)) {
             content = transformModule(xhr.responseText, next);
           } else {
             content = `${xhr.responseText}\n//# sourceURL=${next}\n`;
@@ -57,11 +111,8 @@
             // Load the next script.
             loadNext();
           } else {
-            scriptsContent.forEach(addToDocument);
-
-            // Dump everything for good measure.
-            scriptsContent.length = 0;
-            scripts.length = 0;
+            nextIndex = 0;
+            addNextScriptToPage();
           }
         } else {
           throw new Error(`Failed loading script: empty/unexpected response for ${next}`);
@@ -75,6 +126,39 @@
       };
       xhr.send();
     }
+  };
+
+  const addNextScriptToPage = () => {
+    const scriptIndex = nextIndex++;
+    const next = scriptsContent[scriptIndex];
+    if (next) {
+      if (typeof next === 'string') {
+        addToDocument(next);
+        addNextScriptToPage();
+      } else {
+        next();
+      }
+    } else {
+      // Dump everything for good measure.
+      scriptsContent.length = 0;
+      scripts.length = 0;
+    }
+  };
+
+  const addModuleToDocument = (content, src) => {
+    const scriptEl = document.createElement('script');
+    scriptEl.type = 'module';
+    scriptEl.defer = true;
+    scriptEl.async = false;
+    scriptEl.setAttribute('crossorigin', true);
+
+    if (content) {
+      scriptEl.appendChild(document.createTextNode(content));
+    } else {
+      scriptEl.src = src;
+    }
+
+    document.head.appendChild(scriptEl);
   };
 
   /**
