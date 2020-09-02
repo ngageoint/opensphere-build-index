@@ -3,7 +3,6 @@ const fs = Promise.promisifyAll(require('fs'));
 const rimraf = Promise.promisify(require('rimraf'));
 const mkdirp = Promise.promisifyAll(require('mkdirp'));
 const path = require('path');
-const closureHelper = require('opensphere-build-closure-helper');
 const osIndex = require('../buildindex.js');
 
 const chai = require('chai');
@@ -189,15 +188,12 @@ const generateIndex = function() {
     ],
     debugCss: path.join('styles', 'debug.css'),
     compiledCss: path.join('styles', 'test.min.css'),
+    debugJs: path.join(buildDir, 'test.js'),
     compiledJs: 'test.min.js'
   });
 };
 
 before(function() {
-  // we'll mock the results instead of invoking the Closure helper
-  chai.spy.on(closureHelper, 'createManifest', () => Promise.resolve());
-  chai.spy.on(closureHelper, 'readManifest', () => []);
-
   return cleanMockDirectory()
     .then(generateTemplates)
     .then(generateResourceFiles)
@@ -294,12 +290,7 @@ describe('opensphere-build-index', function() {
             key + ' missing gcc debug defines');
           inspectedScripts++;
 
-          const manifestPath = `.build/debug-manifest-${key}.json`;
-          expect(scripts[inspectedScripts]).to.have.string(`window.GCC_MANIFEST_PATH="${manifestPath}"`,
-            key + ' missing manifest path');
-          inspectedScripts++;
-
-          expect(scripts[inspectedScripts]).to.have.string('.build/app-loader.js', key + ' missing app loader');
+          expect(scripts[inspectedScripts]).to.have.string('.build/test.js', key + ' missing app index');
           inspectedScripts++;
         }
 
