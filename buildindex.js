@@ -197,6 +197,10 @@ const buildDebugIndex = function(options, templateOptions, basePath, appPath) {
     throw new Error('Missing template file ' + templatePath);
   }
 
+  if (!options.debugJs) {
+    throw new Error('Debug application bundle has not been configured. Please define debugJs in the index.');
+  }
+
   console.log('Creating debug index from ' + file + '...');
 
   let template = readFile(templatePath);
@@ -228,7 +232,7 @@ const buildDebugIndex = function(options, templateOptions, basePath, appPath) {
     // add GCC debug defines and application index
     const appScripts = [
       createScriptTag(path.relative(basePath, path.join(appPath, '.build', 'gcc-defines-debug.js'))),
-      createScriptTag(path.relative(basePath, options.debugJs))
+      createScriptTag(options.debugJs)
     ];
 
     // add app scripts to the template (clears the tag if the loader was already added)
@@ -290,7 +294,11 @@ const buildIndexFromFile = function(file, debugOnly) {
   }
 
   if (index) {
-    return buildIndex(index, debugOnly);
+    return buildIndex(index, debugOnly).catch((e) => {
+      console.error('ERROR: failed loading index file ' + file);
+      console.error(e);
+      process.exit(1);
+    });
   }
 
   return Promise.resolve();

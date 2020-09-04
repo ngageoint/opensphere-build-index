@@ -33,6 +33,9 @@ module.exports = {
   // path to the debug application CSS file, relative to basePath
   debugCss: (string|undefined),
 
+  // path to the debug application JS file, relative to basePath
+  debugJs: (string|undefined),
+
   // HTML templates to process
   templates: [
     {
