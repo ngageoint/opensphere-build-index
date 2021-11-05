@@ -1,7 +1,7 @@
 const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs'));
 const rimraf = Promise.promisify(require('rimraf'));
-const mkdirp = Promise.promisifyAll(require('mkdirp'));
+const mkdirp = require('mkdirp');
 const path = require('path');
 const osIndex = require('../buildindex.js');
 
@@ -76,13 +76,9 @@ const resourceFiles = [
  * Recreate the build directory.
  * @return {Promise} A promise that resolves when the directory is ready.
  */
-const cleanMockDirectory = function() {
-  return rimraf(mockDir)
-    .then(function() {
-      return Promise.map([buildDir, distDir, modulesDir], function(dir) {
-        return mkdirp.mkdirpAsync(dir);
-      });
-    });
+const cleanMockDirectory = async () => {
+  await rimraf(mockDir);
+  return Promise.map([buildDir, distDir, modulesDir], (dir) => mkdirp(dir));
 };
 
 /**
@@ -193,12 +189,12 @@ const generateIndex = function() {
   });
 };
 
-before(function() {
-  return cleanMockDirectory()
-    .then(generateTemplates)
-    .then(generateResourceFiles)
-    .then(generateGccArgs)
-    .then(generateIndex);
+before(async () => {
+  await cleanMockDirectory();
+  await generateTemplates();
+  await generateResourceFiles();
+  await generateGccArgs();
+  await generateIndex();
 });
 
 describe('opensphere-build-index', function() {
@@ -213,17 +209,12 @@ describe('opensphere-build-index', function() {
     });
 
     it('reads the debug index', function() {
-      return Promise.map(['index1.html', 'index2.html', 'noapp.html', 'novendor.html'], function(fileName) {
+      return Promise.map(['index1.html', 'index2.html', 'noapp.html', 'novendor.html'], async (fileName) => {
         const key = fileName.replace(/\..*/, '');
-        return fs.readFileAsync(path.join(mockDir, fileName), 'utf8').then(function(file) {
-          indexFiles[key] = file;
-
-          return Promise.resolve();
-        });
-      })
-        .catch(function(e) {
-          expect(e).to.equal(null, 'encountered an error reading index', e);
-        });
+        indexFiles[key] = await fs.readFileAsync(path.join(mockDir, fileName), 'utf8');
+      }).catch(function(e) {
+        expect(e).to.equal(null, 'encountered an error reading index', e);
+      });
     });
 
     it('replaces the version strings', function() {
@@ -310,17 +301,12 @@ describe('opensphere-build-index', function() {
     });
 
     it('reads the distribution index', function() {
-      return Promise.map(['index1.html', 'index2.html'], function(fileName) {
-        return fs.readFileAsync(path.join(distDir, fileName), 'utf8').then(function(file) {
-          const key = fileName.replace(/\.html/, '');
-          indexFiles[key] = file;
-
-          return Promise.resolve();
-        });
-      })
-        .catch(function(e) {
-          expect(e).to.equal(null, 'encountered an error reading index', e);
-        });
+      return Promise.map(['index1.html', 'index2.html'], async (fileName) => {
+        const key = fileName.replace(/\.html/, '');
+        indexFiles[key] = await fs.readFileAsync(path.join(distDir, fileName), 'utf8');
+      }).catch(function(e) {
+        expect(e).to.equal(null, 'encountered an error reading index', e);
+      });
     });
 
     it('replaces the version strings', function() {

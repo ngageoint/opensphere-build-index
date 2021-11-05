@@ -1,7 +1,7 @@
 module.exports = {
   'extends': 'google',
   'parserOptions': {
-    'ecmaVersion': 6
+    'ecmaVersion': 2020
   },
   'rules': {
     // don't dangle commas
