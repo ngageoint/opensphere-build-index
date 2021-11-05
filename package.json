@@ -10,7 +10,8 @@
     "test": "nyc mocha test/**/*.test.js",
     "lint": "eslint {,**/}*.js",
     "package:update": "if git diff --name-only ORIG_HEAD HEAD | grep --quiet package.json; then echo 'UPDATE: package.json changed, consider running yarn in your workspace root'; fi",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "postinstall": "husky install"
   },
   "keywords": [
     "opensphere",
@@ -80,20 +81,12 @@
     "@semantic-release/release-notes-generator": "^9.0.1",
     "chai": "^4.3.0",
     "chai-spies": "^1.0.0",
-    "eslint": "^7.20.0",
+    "eslint": "^8.1.0",
     "eslint-config-google": "^0.14.0",
-    "husky": "^3.0.1",
+    "husky": "^7.0.4",
     "mocha": "^8.3.0",
     "nyc": "^15.1.0",
     "semantic-release": "^17.3.9",
     "slash": "^3.0.0"
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "post-merge": "npm run package:update",
-      "post-rewrite": "npm run package:update",
-      "pre-commit": "if git diff --name-only HEAD | grep -q '\\.js$'; then npm run lint; fi"
-    }
   }
 }
