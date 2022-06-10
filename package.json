@@ -91,7 +91,7 @@
     "mocha": "^8.3.0",
     "nyc": "^15.1.0",
     "pinst": "^2.1.6",
-    "semantic-release": "^17.3.9",
+    "semantic-release": "^19.0.3",
     "slash": "^3.0.0"
   }
 }
